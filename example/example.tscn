@@ -1,0 +1,134 @@
+[gd_scene load_steps=12 format=3 uid="uid://soopr2v4ywxe"]
+
+[ext_resource type="Script" path="res://example/example.gd" id="1_efwug"]
+[ext_resource type="Shader" uid="uid://ceglme3e12f8l" path="res://example/background.tres" id="1_shlvx"]
+[ext_resource type="Script" path="res://addons/uiJuicer/timed_label.gd" id="2_0bytx"]
+[ext_resource type="AudioStream" uid="uid://cn0viqdkjw7e" path="res://example/keyboard.wav" id="3_ebcsy"]
+[ext_resource type="Script" path="res://addons/uiJuicer/fadeLabel.gd" id="3_mu5to"]
+[ext_resource type="Script" path="res://addons/uiJuicer/bounce_button.gd" id="5_uwo53"]
+[ext_resource type="Script" path="res://addons/uiJuicer/Fader.gd" id="6_nqsnq"]
+
+[sub_resource type="Gradient" id="Gradient_ymqo5"]
+offsets = PackedFloat32Array(0.352459, 1)
+colors = PackedColorArray(0, 0.932647, 0.934918, 1, 1, 1, 1, 1)
+
+[sub_resource type="FastNoiseLite" id="FastNoiseLite_1br2n"]
+frequency = 0.0026
+
+[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_wdguw"]
+width = 1024
+height = 1024
+seamless = true
+color_ramp = SubResource("Gradient_ymqo5")
+noise = SubResource("FastNoiseLite_1br2n")
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_buoo7"]
+shader = ExtResource("1_shlvx")
+shader_parameter/Noise = SubResource("NoiseTexture2D_wdguw")
+
+[node name="Test" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_efwug")
+
+[node name="Background" type="ColorRect" parent="."]
+material = SubResource("ShaderMaterial_buoo7")
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Title" type="Label" parent="."]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -221.0
+offset_top = -220.0
+offset_right = 223.0
+offset_bottom = -143.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_font_sizes/font_size = 56
+text = "Juice UI Controls"
+script = ExtResource("3_mu5to")
+
+[node name="Delayed" type="Label" parent="."]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -295.0
+offset_top = -124.0
+offset_right = 297.0
+offset_bottom = -47.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_font_sizes/font_size = 56
+text = "Just after the first one"
+script = ExtResource("3_mu5to")
+AutoFadeIn = false
+
+[node name="TextArea" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 12
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -127.0
+grow_horizontal = 2
+grow_vertical = 0
+color = Color(0.2, 0.2, 0.2, 0.643137)
+
+[node name="TimedLabel" type="Label" parent="TextArea"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 24.0
+offset_top = 9.0
+offset_right = -23.0
+offset_bottom = -9.0
+grow_horizontal = 2
+grow_vertical = 2
+text = "A keystroke sound can be set, and has pitch random variation."
+script = ExtResource("2_0bytx")
+Auto_Start = true
+Audio = ExtResource("3_ebcsy")
+
+[node name="BounceButton" type="Button" parent="TextArea"]
+layout_mode = 1
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -75.0
+offset_top = -49.0
+offset_right = -34.0
+offset_bottom = -18.0
+grow_horizontal = 0
+grow_vertical = 0
+text = "Skip"
+script = ExtResource("5_uwo53")
+
+[node name="ButtonSkipFader" type="Node" parent="TextArea/BounceButton"]
+script = ExtResource("6_nqsnq")
+AutoFadeIn = false
+StartVisible = true
+
+[connection signal="finished" from="Title" to="." method="_on_title_finished"]
+[connection signal="End" from="TextArea/TimedLabel" to="." method="_on_timed_label_end"]
+[connection signal="KeyStroke" from="TextArea/TimedLabel" to="." method="_on_timed_label_key_stroke"]
+[connection signal="Start" from="TextArea/TimedLabel" to="." method="_on_timed_label_start"]
+[connection signal="pressed" from="TextArea/BounceButton" to="." method="_on_bounce_button_pressed"]
